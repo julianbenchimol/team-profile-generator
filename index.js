@@ -1,5 +1,6 @@
 //runs the application
 const Inquirer = require('inquirer');
+const fs = require('fs');
 
 Inquirer
   .prompt([
@@ -89,5 +90,9 @@ Inquirer
     //End Intern Input
   ])
   .then(answers =>{
-    console.log(answers)
-  })
+    createHtml(answers);
+})
+
+function createHtml(answers){
+    
+}
