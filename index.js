@@ -154,8 +154,8 @@ function createHtml(employee){
     </html>`
 
     //creates the test HTML file
-    fs.writeFile('test.html', markup, (err) =>
-    err ? console.error(err) : console.log('Test HTML made!'));
+    fs.writeFile('dist/index.html', markup, (err) =>
+    err ? console.error(err) : console.log('Index.html made!'));
 
     //if the role is manager, sets the card data to fit the object
     if(employee.getRole() === 'Manager'){
