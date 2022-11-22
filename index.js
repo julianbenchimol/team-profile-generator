@@ -146,7 +146,6 @@ function createHtml(employee){
         </div>
       </div>`
       addCard(card);
-
     }
     //if the role is Engineer, sets the card data to fit the object
     else if(employee.getRole() === 'Engineer'){
