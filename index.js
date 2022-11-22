@@ -116,46 +116,15 @@ function createTeammate(answers){
 
 //Creates the HTML document, 'test.html' and assigns values to 'card' depending on the employee type
 function createHtml(employee){
-    const markup = `<!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <!-- Default Head Tags -->
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <!-- Bootstrap Stylesheet Connection -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
-        <!-- Default Stylesheet Connection -->
-        <link rel="stylesheet" href="style.css" />
-        <title>Insert Title Here</title>
-      </head>
-    
-      <body>
-        <!-- Body Elements Go Here -->
-        <div class = "container">
-            <div class = "row" id = "main-row">
-                <div class = "col"></div>
-            </div>
-        </div>
-    
-    
-        <div>
-            <!-- JQuery Connection -->
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    
-            <!-- Bootstrap JS connection -->
-            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
-    
-            <!-- Main Script Connection -->
-            <script type = "text/javascript" src = "../index.js"></script>
-        </div>
-    
-      </body>
-    </html>`
-
+    fs.readFile('test.html','utf8', function(err, data){
+        if(err){return console.log(err)}
+        const oldMarkup = data;
+            
     //creates the test HTML file
-    fs.writeFile('dist/index.html', markup, (err) =>
+    fs.writeFile('dist/index.html', oldMarkup, (err) =>
     err ? console.error(err) : console.log('Index.html made!'));
+    });
+
 
     //if the role is manager, sets the card data to fit the object
     if(employee.getRole() === 'Manager'){
@@ -176,7 +145,7 @@ function createHtml(employee){
           <p class="card-text">Role: ${employee.getRole()}\n ID: ${employee.getId()}\n Email: <a href = "mailto: ${employee.getEmail()}">Send Email</a>\n School: ${employee.getSchoool()}</p>
         </div>
       </div>`
-    //   addCard(card);
+      addCard(card);
 
     }
     //if the role is Engineer, sets the card data to fit the object
@@ -184,10 +153,10 @@ function createHtml(employee){
         const card = `<div class="card" style="width: 18rem;">
         <div class="card-body">
           <h5 class="card-title">${employee.getName()}</h5>
-          <p class="card-text">Role: ${employee.getRole()}\n ID: ${employee.getId()}\n Email: <a href = "mailto: ${employee.getEmail()}">Send Email</a>\n GitHub: <a href = "https://github.com/${employee.getGithub()}>GitHub Profile </a></p>
+          <p class="card-text">Role: ${employee.getRole()}\n ID: ${employee.getId()}\n Email: <a href = "mailto: ${employee.getEmail()}">Send Email</a>\n GitHub: <a href = "https://github.com/${employee.getGithub()}">GitHub Profile </a></p>
         </div>
       </div>`
-    //   addCard(card);
+      addCard(card);
     }
 
 }
@@ -198,13 +167,6 @@ function addCard(employeeCard){
         if (err) {
           return console.log(err);
         }
-        //saves the old markup data in a varibale
-        const oldMarkup = data;
-        //writes the old markup data to a new file to store
-        fs.writeFile('oldData.html', oldMarkup, function (err, data){
-            if(err) {return console.log(err)}
-            console.log("Old Markup Saved")
-        });
         //new markup with the card being added
         const newMarkup = `<!DOCTYPE html>
         <html lang="en">
@@ -244,5 +206,9 @@ function addCard(employeeCard){
         
           </body>
         </html>`
+        fs.writeFile('index.html', newMarkup, function (err, data){
+            if(err) {return console.log(err)}
+            console.log("New Markup Added")
+        });
       });
 }
