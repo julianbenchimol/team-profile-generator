@@ -111,14 +111,14 @@ function createTeammate(answers){
     else if(answers.teammateType === 'Intern'){
         const newIntern = new Intern(answers.internName, answers.internId, answers.internEmail, answers.internSchool);
         createHtml(newIntern);
-
     }
 }
 
 function createHtml(employee){
+    console.log(employee.getRole());
 
-    if(employee.teammateType === 'Manager'){
-        markup = `<!DOCTYPE html>
+    if(employee.getRole() === 'Manager'){
+        const markup = `<!DOCTYPE html>
         // <html lang="en">
         //   <head>
         //     <!-- Default Head Tags -->
@@ -159,11 +159,9 @@ function createHtml(employee){
         
         //   </body>
         // </html>`
-       
-        return;
     }
-    else if (employee.teammateType === 'Intern'){
-        markup = `<!DOCTYPE html>
+    else if (employee.getRole() === 'Intern'){
+        const markup = `<!DOCTYPE html>
         // <html lang="en">
         //   <head>
         //     <!-- Default Head Tags -->
@@ -205,11 +203,9 @@ function createHtml(employee){
         
         //   </body>
         // </html>`
-        
-        return;
     }
-    else if(employee.teammateType === 'Engineer'){
-        markup = `<!DOCTYPE html>
+    else if(employee.getRole() === 'Engineer'){
+        const markup = `<!DOCTYPE html>
         // <html lang="en">
         //   <head>
         //     <!-- Default Head Tags -->
@@ -251,9 +247,5 @@ function createHtml(employee){
         
         //   </body>
         // </html>`
-        return;
     }
-
-    fs.writeFile('test.html', markup, (err) =>
-    err ? console.error(err) : console.log('Success!'));
 }
