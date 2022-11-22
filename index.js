@@ -1,213 +1,290 @@
-//runs the application
 const Inquirer = require('inquirer');
-const Employee = require('./lib/employee.js');
 const Engineer = require('./lib/engineer.js');
 const Intern = require('./lib/intern.js');
 const Manager = require('./lib/manager.js');
 const fs = require('fs');
-
-//Asks questions to the user to gather info
-Inquirer
-  .prompt([
-    {
-        type: 'list',
-        message: 'Add a Teammate',
-        name: 'teammateType',
-        choices: ['Manager','Engineer','Intern'],
-    },
-    //Start Manger Input
+const { type } = require('os');
+const managerQuestions = [
     {
         type: 'input',
-        message: `Please input the Manager's Name: `,
-        name: 'managerName',
-        when: (answers) => answers.teammateType === 'Manager'
+        message: `Please input Manager's Name:`,
+        name: 'name'
     },
     {
         type: 'input',
         message: `Please input the Manager's ID: `,
-        name: 'managerID',
-        when: (answers) => answers.teammateType === 'Manager'
+        name: 'id',
     },
     {
         type: 'input',
         message: `Please input the Manager's Email: `,
-        name: 'managerEmail',
-        when: (answers) => answers.teammateType === 'Manager'
+        name: 'email',
     },
     {
         type: 'input',
         message: `Please input the Manager's Office Number: `,
-        name: 'managerOfficeNumber',
-        when: (answers) => answers.teammateType === 'Manager'
+        name: 'officeNumber',
     },
-    //End Manager Input
-    //Start Engineer Input
+    {
+        type: 'confirm',
+        message: 'Would you like to add Teammates?',
+        name: 'confirmAdd'
+    },
+
+]
+const selectRole = [
+    {
+        type: 'list',
+        message: 'Choose a role: ',
+        name: 'teammateType',
+        choices: ['Engineer','Intern'],
+    }
+]
+const engineerQuestions = [
     {
         type: 'input',
         message: `Please input the Engineer's Name: `,
-        name: 'egineerName',
-        when: (answers) => answers.teammateType === 'Engineer'
+        name: 'name',
     },
     {
         type: 'input',
         message: `Please input the Engineer's ID: `,
-        name: 'engineerId',
-        when: (answers) => answers.teammateType === 'Engineer'
+        name: 'id',
     },
     {
         type: 'input',
         message: `Please input the Engineer's Email: `,
-        name: 'engineerEmail',
-        when: (answers) => answers.teammateType === 'Engineer'
+        name: 'email',
     },
     {
         type: 'input',
         message: `Please input the Engineer's GitHub Username: `,
-        name: 'engineerGitHub',
-        when: (answers) => answers.teammateType === 'Engineer'
+        name: 'gitHub',
     },
-    //End Engineer Input
-    //Start Intern Input
+    {
+        type: 'confirm',
+        message: 'Would you like to add a new Teammate?',
+        name: 'confirmAdditional',
+    }
+]
+const internQuestions = [
+   
     {
         type: 'input',
         message: `Please input the Intern's Name: `,
-        name: 'internName',
-        when: (answers) => answers.teammateType === 'Intern'
+        name: 'name',
     },
     {
         type: 'input',
         message: `Please input the Intern's ID: `,
-        name: 'internId',
-        when: (answers) => answers.teammateType === 'Intern'
+        name: 'id',
     },
     {
         type: 'input',
         message: `Please input the Intern's Email: `,
-        name: 'internEmail',
-        when: (answers) => answers.teammateType === 'Intern'
+        name: 'email',
     },
     {
         type: 'input',
         message: `Please input the Intern's School: `,
-        name: 'internSchool',
-        when: (answers) => answers.teammateType === 'Intern'
+        name: 'school',
     },
-    //End Intern Input
-  ])
-  .then(answers =>{
-    createTeammate(answers);
-})
+    {
+        type: 'confirm',
+        message: 'Would you like to add a new Teammate?',
+        name: 'confirmAdditional',
+    }
 
-//creates the teammates using the constructors depending on the teammateType
-function createTeammate(answers){
-    if(answers.teammateType === 'Manager'){
-        const newManager = new Manager(answers.managerName, answers.managerID, answers.managerEmail, answers.managerOfficeNumber);
-        createHtml(newManager);
-    }
-    else if(answers.teammateType === 'Engineer'){
-        const newEngineer = new Engineer(answers.egineerName, answers.engineerId, answers.engineerEmail, answers.engineerGitHub);
-        createHtml(newEngineer);
-    }
-    else if(answers.teammateType === 'Intern'){
-        const newIntern = new Intern(answers.internName, answers.internId, answers.internEmail, answers.internSchool);
-        createHtml(newIntern);
-    }
+];
+const allAnswers = [];
+const employeeDatabase = [];
+
+startScript();
+
+function startScript(){
+    Inquirer.prompt(managerQuestions).then((answers)=>{
+        answers.role = 'Manager'
+        if(answers.confirmAdd){
+            allAnswers.push(answers);
+            addTeam(answers)
+        }
+        else{
+            allAnswers.push(answers);
+            createEmployee();
+
+        }
+    })   
 }
 
-//Creates the HTML document, 'test.html' and assigns values to 'card' depending on the employee type
-function createHtml(employee){
-    fs.readFile('test.html','utf8', function(err, data){
-        if(err){return console.log(err)}
-        const oldMarkup = data;
-            
-    //creates the test HTML file
-    fs.writeFile('dist/index.html', oldMarkup, (err) =>
-    err ? console.error(err) : console.log('Index.html made!'));
+function addTeam(){   
+    Inquirer.prompt(selectRole).then((answers)=>{
+        if(answers.teammateType === 'Engineer'){
+            Inquirer.prompt(engineerQuestions).then((answers)=>{
+                answers.role = 'Engineer';
+                if(answers.confirmAdditional){
+                    allAnswers.push(answers);
+                    addTeam();
+                }
+                else{
+                    allAnswers.push(answers);
+                    createEmployee();
+                }
+            })
+        }
+        else if(answers.teammateType === 'Intern'){
+            Inquirer.prompt(internQuestions).then((answers)=>{
+                answers.role = 'Intern'
+                if(answers.confirmAdditional){
+                    allAnswers.push(answers);
+                    addTeam();
+                }
+                else{
+                    allAnswers.push(answers);
+                    createEmployee();
+                }
+            })
+        }
+    })
+}
+
+function createEmployee(){
+    for(let i = 0; i < allAnswers.length; i++){
+        if(allAnswers[i].role === 'Manager'){
+            const manager = allAnswers[i];
+            const newManager = new Manager(manager.name, manager.id, manager.email, manager.officeNumber);
+            employeeDatabase.push(newManager);
+        }
+        if(allAnswers[i].role === 'Engineer'){
+            const engineer = allAnswers[i];
+            const newEngineer = new Engineer(engineer.name, engineer.id, engineer.email, engineer.gitHub);
+            employeeDatabase.push(newEngineer)
+        }
+        if(allAnswers[i].role === 'Intern'){
+            const intern = allAnswers[i];
+            const newIntern = new Intern(intern.name, intern.id, intern.email, intern.school);
+            employeeDatabase.push(newIntern)
+        }
+    }
+    createHTML();
+}
+
+function createHTML(){
+    const markdownTop = `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <!-- Default Head Tags -->
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <!-- Bootstrap Stylesheet Connection -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
+        <!-- Default Stylesheet Connection -->
+        <link rel="stylesheet" href="style.css" />
+        <title>Insert Title Here</title>
+      </head>
+    
+      <body>
+        <!-- Body Elements Go Here -->
+        <div class = "container">
+        <div class = "row" id = "main-row">`
+
+    const markdownBot = `</div>
+    </div>
+
+
+    <div>
+        <!-- JQuery Connection -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+        <!-- Bootstrap JS connection -->
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
+
+        <!-- Main Script Connection -->
+        <script type = "text/javascript" src = "../index.js"></script>
+    </div>
+
+  </body>
+        </html>`
+
+    fs.writeFile('dist/index.html', markdownTop, function(err, data){
+        if(err){console.log(err)}
+        console.log("HTML Top created")
     });
 
+    for(let i = 0; i < employeeDatabase.length; i++){
+        if(employeeDatabase[i].getRole() === 'Manager'){
+            const employee = employeeDatabase[i];
 
-    //if the role is manager, sets the card data to fit the object
-    if(employee.getRole() === 'Manager'){
-        const card = `<div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">${employee.getName()}</h5>
-          <p class="card-text">Role: ${employee.getRole()}\n ID: ${employee.getId()}\n Email: <a href = "mailto: ${employee.getEmail()}">Send Email</a>\n Office Number: ${employee.getOfficeNumber()}</p>
-        </div>
-      </div>`
-        //calls the addCard Function with the card variable as a parameter
-        addCard(card);
-    }
-    //if the role is Intern, sets the card data to fit the object
-    else if (employee.getRole() === 'Intern'){
-        const card = `<div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">${employee.getName()}</h5>
-          <p class="card-text">Role: ${employee.getRole()}\n ID: ${employee.getId()}\n Email: <a href = "mailto: ${employee.getEmail()}">Send Email</a>\n School: ${employee.getSchoool()}</p>
-        </div>
-      </div>`
-      addCard(card);
-    }
-    //if the role is Engineer, sets the card data to fit the object
-    else if(employee.getRole() === 'Engineer'){
-        const card = `<div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">${employee.getName()}</h5>
-          <p class="card-text">Role: ${employee.getRole()}\n ID: ${employee.getId()}\n Email: <a href = "mailto: ${employee.getEmail()}">Send Email</a>\n GitHub: <a href = "https://github.com/${employee.getGithub()}">GitHub Profile </a></p>
-        </div>
-      </div>`
-      addCard(card);
-    }
-
-}
-//Adds the card from createHtml to the file using node file system
-function addCard(employeeCard){
-    //reads the current index.html and saves it as 'old markup'
-    fs.readFile('dist/index.html', 'utf8', function (err,data) {
-        if (err) {
-          return console.log(err);
-        }
-        //new markup with the card being added
-        const newMarkup = `<!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <!-- Default Head Tags -->
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <!-- Bootstrap Stylesheet Connection -->
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
-            <!-- Default Stylesheet Connection -->
-            <link rel="stylesheet" href="style.css" />
-            <title>Insert Title Here</title>
-          </head>
-        
-          <body>
-            <!-- Body Elements Go Here -->
-            <div class = "container">
-                <div class = "row" id = "main-row">
-                    <div class = "col">
-                    ${employeeCard}
+            const card =
+            `<div class = "col-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${employee.getName()}</h5>
+                        <p class="card-text">
+                        <p class = "d-block">Role: ${employee.getRole()}</p>
+                        <p class = "d-block">ID: ${employee.getId()}</p>
+                        <p class = "d-block">Email: <a href = "mailto: ${employee.getEmail()}">Send Email</a></p> 
+                        <p class = "d-block">Office Number: ${employee.getOfficeNumber()}</p>
+                        </p>
                     </div>
                 </div>
-            </div>
-        
-        
-            <div>
-                <!-- JQuery Connection -->
-                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-        
-                <!-- Bootstrap JS connection -->
-                <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
-        
-                <!-- Main Script Connection -->
-                <script type = "text/javascript" src = "../index.js"></script>
-            </div>
-        
-          </body>
-        </html>`
-        fs.writeFile('index.html', newMarkup, function (err, data){
-            if(err) {return console.log(err)}
-            console.log("New Markup Added")
-        });
-      });
+            </div>`
+
+            fs.appendFile('dist/index.html', `${card}\n`, function(err, data){
+                if(err){console.log(err)}
+                console.log("Manager Card made Successfully")
+                })
+        }
+        if(employeeDatabase[i].getRole() === 'Engineer'){
+            const employee = employeeDatabase[i];
+
+            const card = 
+            `<div class = "col-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${employee.getName()}</h5>
+                        <p class="card-text">
+                            <p class = "d-block">Role: ${employee.getRole()}</p> 
+                            <p class = "d-block">ID: ${employee.getId()}</p>
+                            <p class = "d-block">Email: <a href = "mailto: ${employee.getEmail()}">Send Email</a></p>
+                            <p class = "d-block">GitHub: <a href = "https://github.com/${employee.getGithub()}">GitHub Profile</a> </p>
+                        </p>
+                    </div>
+                </div>
+            </div>`
+
+          fs.appendFile('dist/index.html', `${card}\n`, function(err, data){
+            if(err){console.log(err)}
+            console.log("Engineer Card made Successfully")
+            });
+
+        }
+        if(employeeDatabase[i].getRole() === 'Intern'){
+            const employee = employeeDatabase[i];
+            const card = 
+            `<div class = "col-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${employee.getName()}</h5>
+                        <p class="card-text">
+                        <p class = "d-block">Role: ${employee.getRole()}</p>
+                        <p class = "d-block">ID: ${employee.getId()}</p>
+                        <p class = "d-block">Email: <a href = "mailto: ${employee.getEmail()}">Send Email</a></p> 
+                        <p class = "d-block">School: ${employee.getSchool()}</p>
+                        </p>
+                    </div>
+                </div>
+            </div>`
+          fs.appendFile('dist/index.html', `${card}\n`, function(err, data){
+            if(err){console.log(err)}
+            console.log("Intern Card made Successfully")
+            })
+        }
+
+    }
+    fs.appendFile('dist/index.html', markdownBot, function(err, data){
+        if(err){console.log(err)}
+        console.log("HTML Bot created")
+    });
+
 }
